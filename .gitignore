@@ -1,0 +1,8 @@
+src/audio/*
+src/Manifest.txt
+src/META-INF/*
+.idea/*
+out/*
+*.jar
+*.iml
+*.csv

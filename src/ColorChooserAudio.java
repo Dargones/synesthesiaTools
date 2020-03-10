@@ -1,27 +1,25 @@
-import com.sun.media.sound.JavaSoundAudioClip;
-
+import javax.sound.sampled.*;
 import javax.swing.*;
-import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 
 /**
  * A version of color chooser that plays an audio clip for each element in seq
  */
 public class ColorChooserAudio extends ColorChooser {
-    private static final String DIR = "src/audio/"; // the directory from which to load all audio clips
+    private static final String DIR = "audio/"; // the directory from which to load all audio clips
     // Extension of that the audion files use. Not all extensions are supported
-    private static final String EXT = "wav";
-    private AudioClip audioClips[]; // the audion clips to play
+    private static final String EXT = "AIFF";
+    private Clip[] audioClips; // the audion clips to play
     private JButton replayButton;
 
     public ColorChooserAudio(Main menu, String[] seq, Color[] colors, boolean shuffle, String promptText) {
         super(menu, seq, colors, shuffle, promptText);
         try {
             initAudioClips();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -29,8 +27,13 @@ public class ColorChooserAudio extends ColorChooser {
     @Override
     public void actionPerformed(ActionEvent e) {
         super.actionPerformed(e);
-        if (e.getSource() == replayButton)
-            audioClips[order.get(seqId)].play();
+        if (e.getSource() == replayButton) {
+            Clip clip = audioClips[order.get(seqId)];
+            if (clip.isRunning())
+                clip.stop();
+            clip.setFramePosition(0);
+            clip.start();
+        }
     }
 
     @Override
@@ -46,16 +49,19 @@ public class ColorChooserAudio extends ColorChooser {
     protected void nextState() {
         super.nextState();
         audioClips[order.get(seqId)].stop();
-        audioClips[order.get(++seqId)].play();
+        audioClips[order.get(++seqId)].start();
     }
 
     /**
      * For each element in seq, load an audio track from audio directory
      */
-    private void initAudioClips() throws IOException{
-        audioClips = new AudioClip[seq.length];
-        for (int i = 0; i < audioClips.length; i++)
-            audioClips[i] = new JavaSoundAudioClip(new FileInputStream(DIR + seq[i] + '.' + EXT));
-        audioClips[order.get(seqId)].play();
+    private void initAudioClips() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        audioClips = new Clip[seq.length];
+        for (int i = 0; i < audioClips.length; i++) {
+            audioClips[i] = AudioSystem.getClip();
+            AudioInputStream tmp = AudioSystem.getAudioInputStream(new File(DIR + seq[i] + '.' + EXT));
+            audioClips[i].open(tmp);
+        }
+        audioClips[order.get(seqId)].start();
     }
 }

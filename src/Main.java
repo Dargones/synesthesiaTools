@@ -44,9 +44,9 @@ public class Main extends JPanel implements ActionListener {
 
         // Letter Sets
         sets = new String[3][];
-        sets[0] = new String[] {"A", "B"};
-        sets[1] = new String[] {"C", "D", "E"};
-        sets[2] = new String[] {"Z"};
+        sets[0] = new String[] {"Con-00b", "Con-01a", "Con-11b"};
+        sets[1] = new String[] {"Con-27b", "Con-36b"};
+        sets[2] = new String[] {"Con-53a"};
 
         // This is to store the selected colors
         colors = new Color[sets.length][];
